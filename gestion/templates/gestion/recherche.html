@@ -1,0 +1,131 @@
+{% extends 'gestion/base.html' %}
+{% block title %} — Recherche{% endblock %}
+{% block nav_search %}active{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section style="background:var(--darker);padding:50px 0 45px;">
+    <div class="container">
+        <p style="color:var(--course);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">TROUVER UN VÉHICULE</p>
+        <h1 style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:white;letter-spacing:2px;line-height:1;">
+            RECHERCHE<br><span style="color:var(--course);">& FILTRAGE</span>
+        </h1>
+    </div>
+</section>
+
+<section style="padding:50px 0;">
+    <div class="container">
+
+        <!-- SEARCH FORM -->
+        <div class="card mb-3" style="border-top: 4px solid var(--dark);">
+            <form method="get">
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:16px;align-items:end;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Plaque ou Chauffeur</label>
+                        <div style="position:relative;">
+                            <i class="bi bi-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;"></i>
+                            <input type="text" name="q" value="{{ q }}" class="form-control" style="padding-left:36px;" placeholder="Ex: 12345-A ou Mohamed">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Zone</label>
+                        <select name="zone" class="form-select">
+                            <option value="">Toutes les zones</option>
+                            {% for zone in zones %}
+                            <option value="{{ zone.id }}" {% if zone_id == zone.id|stringformat:"s" %}selected{% endif %}>{{ zone.nom_zone }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Disponibilité</label>
+                        <select name="disponibilite" class="form-select">
+                            <option value="">Tous</option>
+                            <option value="true" {% if dispo == 'true' %}selected{% endif %}>Disponibles</option>
+                            <option value="false" {% if dispo == 'false' %}selected{% endif %}>Non disponibles</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" style="height:42px;white-space:nowrap;">
+                        <i class="bi bi-funnel"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- RESULTS COUNT -->
+        <div class="flex-between mb-2">
+            <p style="font-size:13px;color:var(--muted);">
+                <strong style="color:var(--text);">{{ taxis|length }}</strong> résultat(s) trouvé(s)
+                {% if q %} pour "<strong>{{ q }}</strong>"{% endif %}
+            </p>
+            {% if q or zone_id or dispo %}
+            <a href="/recherche/" style="font-size:13px;color:var(--muted);text-decoration:none;">
+                <i class="bi bi-x"></i> Effacer les filtres
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- RESULTS TABLE -->
+        <div class="card" style="padding:0;overflow:hidden;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plaque</th>
+                        <th>Chauffeur</th>
+                        <th>Téléphone</th>
+                        <th>Zone</th>
+                        <th>Statut</th>
+                        <th>Date circulation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for taxi in taxis %}
+                <tr>
+                    <td><span class="plaque-badge">{{ taxi.plaque }}</span></td>
+                    <td>
+                        {% if taxi.chauffeur %}
+                        <div style="font-weight:600;">{{ taxi.chauffeur }}</div>
+                        <div style="font-size:11px;color:var(--muted);">Permis: {{ taxi.chauffeur.numero_permis }}</div>
+                        {% else %}
+                        <span class="text-muted text-sm">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if taxi.chauffeur %}
+                        <span class="text-sm">{{ taxi.chauffeur.telephone }}</span>
+                        {% else %}<span class="text-muted text-sm">—</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if taxi.zone %}
+                        <span style="background:#f0f4ff;color:#3b5bdb;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">
+                            {{ taxi.zone }}
+                        </span>
+                        {% else %}<span class="text-muted text-sm">—</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if taxi.statut == 'libre' %}
+                            <span class="badge-status badge-libre"><span class="dot"></span>Libre</span>
+                        {% elif taxi.statut == 'en_course' %}
+                            <span class="badge-status badge-course"><span class="dot"></span>En course</span>
+                        {% else %}
+                            <span class="badge-status badge-hors"><span class="dot"></span>Hors service</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-sm">{{ taxi.date_mise_circulation }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;padding:60px;color:var(--muted);">
+                        <i class="bi bi-search" style="font-size:36px;display:block;margin-bottom:12px;opacity:0.3;"></i>
+                        Aucun résultat pour cette recherche.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

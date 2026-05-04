@@ -1,0 +1,112 @@
+{% extends 'gestion/base.html' %}
+{% block title %} — Ajouter un Taxi{% endblock %}
+{% block nav_add %}active{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section style="background:var(--darker);padding:50px 0 45px;">
+    <div class="container">
+        <p style="color:var(--course);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;">GESTION DE LA FLOTTE</p>
+        <h1 style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:white;letter-spacing:2px;line-height:1;">
+            ENREGISTRER<br><span style="color:var(--course);">UN TAXI</span>
+        </h1>
+    </div>
+</section>
+
+<section style="padding:50px 0;">
+    <div class="container">
+        <div class="grid-2" style="gap:40px;align-items:start;">
+
+            <!-- FORM -->
+            <div class="card" style="border-top:4px solid var(--dark);">
+                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:24px;">
+                    INFORMATIONS DU VÉHICULE
+                </h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Plaque d'immatriculation *</label>
+                        <input type="text" name="plaque" class="form-control" required placeholder="Ex: 12345-A-1" style="font-family:monospace;font-size:15px;font-weight:700;letter-spacing:1px;">
+                        <p style="font-size:11px;color:var(--muted);margin-top:4px;">Identifiant unique du véhicule</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Chauffeur assigné</label>
+                        <select name="chauffeur" class="form-select">
+                            <option value="">— Aucun chauffeur —</option>
+                            {% for c in chauffeurs %}
+                            <option value="{{ c.id }}">{{ c.prenom }} {{ c.nom }} — Permis {{ c.numero_permis }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Zone d'opération</label>
+                        <select name="zone" class="form-select">
+                            <option value="">— Aucune zone —</option>
+                            {% for z in zones %}
+                            <option value="{{ z.id }}">{{ z.nom_zone }} ({{ z.tarif_base }} MAD)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date de mise en circulation *</label>
+                        <input type="date" name="date_mise_circulation" class="form-control" required>
+                        <p style="font-size:11px;color:var(--muted);margin-top:4px;">Utilisé pour les alertes de maintenance (> 5 ans)</p>
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <button type="submit" class="btn-primary" style="flex:1;text-align:center;padding:12px;">
+                            <i class="bi bi-check-lg"></i> Enregistrer le Taxi
+                        </button>
+                        <a href="/" class="btn-outline" style="padding:12px 20px;">Annuler</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- INFO PANEL -->
+            <div>
+                <!-- Status info -->
+                <div class="card mb-3">
+                    <h4 style="font-size:14px;font-weight:700;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.5px;">Statuts disponibles</h4>
+                    <div style="display:flex;flex-direction:column;gap:12px;">
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafb;border-radius:8px;">
+                            <span class="badge-status badge-libre"><span class="dot"></span>Libre</span>
+                            <span style="font-size:13px;color:var(--muted);">Taxi disponible pour une course</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafb;border-radius:8px;">
+                            <span class="badge-status badge-course"><span class="dot"></span>En course</span>
+                            <span style="font-size:13px;color:var(--muted);">Taxi actuellement en déplacement</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafb;border-radius:8px;">
+                            <span class="badge-status badge-hors"><span class="dot"></span>Hors service</span>
+                            <span style="font-size:13px;color:var(--muted);">Taxi en panne ou en maintenance</span>
+                        </div>
+                    </div>
+                    <p style="font-size:12px;color:var(--muted);margin-top:12px;">Le statut par défaut sera <strong>Libre</strong> à l'enregistrement.</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="card-dark">
+                    <h4 style="font-size:13px;font-weight:700;margin-bottom:20px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;">Flotte actuelle</h4>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div>
+                            <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:white;">{{ chauffeurs|length }}</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Chauffeurs</div>
+                        </div>
+                        <div>
+                            <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:white;">{{ zones|length }}</div>
+                            <div style="font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Zones</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
+                        <p style="font-size:12px;color:rgba(255,255,255,0.4);">
+                            <i class="bi bi-info-circle"></i> Gérez chauffeurs et zones depuis l'interface <a href="/admin/" style="color:var(--course);text-decoration:none;">Admin Django</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

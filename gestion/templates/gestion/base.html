@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TaxiFlow{% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark: #1a2332;
+            --darker: #111927;
+            --card-bg: #f4f5f7;
+            --accent: #1a2332;
+            --text: #333;
+            --muted: #888;
+            --libre: #22c55e;
+            --course: #f59e0b;
+            --hors: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f8f9fb; color: var(--text); }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: var(--darker);
+            padding: 18px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .navbar-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        .navbar-brand span { color: var(--course); }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: white; }
+        .btn-admin {
+            background: white;
+            color: var(--darker);
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .btn-admin:hover { opacity: 0.85; }
+
+        /* ── BUTTONS ── */
+        .btn-primary {
+            background: var(--dark);
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.85; color: white; }
+        .btn-outline {
+            background: transparent;
+            color: var(--dark);
+            padding: 9px 22px;
+            border: 2px solid var(--dark);
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .btn-outline:hover { background: var(--dark); color: white; }
+
+        /* ── STATUS BADGES ── */
+        .badge-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .badge-libre { background: #dcfce7; color: #16a34a; }
+        .badge-course { background: #fef3c7; color: #d97706; }
+        .badge-hors { background: #fee2e2; color: #dc2626; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+        /* ── CARDS ── */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+        }
+        .card-dark {
+            background: var(--dark);
+            color: white;
+            border-radius: 12px;
+            padding: 28px;
+        }
+
+        /* ── STAT CARDS ── */
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            line-height: 1;
+        }
+        .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+        /* ── TABLE ── */
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: var(--card-bg);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+        .plaque-badge {
+            background: var(--card-bg);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ── FORMS ── */
+        .form-group { margin-bottom: 20px; }
+        .form-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
+        .form-control, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-control:focus, .form-select:focus { border-color: var(--dark); }
+        .form-control-sm { padding: 7px 12px; font-size: 13px; }
+
+        /* ── SECTION HEADERS ── */
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 42px;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+        .section-sub { font-size: 14px; color: var(--muted); margin-top: 8px; max-width: 500px; }
+
+        /* ── ALERT ── */
+        .alert-warning {
+            background: #fffbeb;
+            border-left: 4px solid var(--course);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: #92400e;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--darker);
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            margin-top: 80px;
+        }
+        footer a { color: rgba(255,255,255,0.7); text-decoration: none; margin: 0 12px; }
+        footer a:hover { color: white; }
+
+        /* ── UTILITY ── */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .flex { display: flex; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-center { display: flex; align-items: center; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 16px; }
+        .mt-1 { margin-top: 8px; }
+        .mt-2 { margin-top: 16px; }
+        .mt-3 { margin-top: 24px; }
+        .mt-4 { margin-top: 40px; }
+        .mt-5 { margin-top: 60px; }
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 16px; }
+        .mb-3 { margin-bottom: 24px; }
+        .text-muted { color: var(--muted); }
+        .text-white { color: white; }
+        .fw-bold { font-weight: 700; }
+        .text-sm { font-size: 13px; }
+        .text-xs { font-size: 11px; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">TAXI<span>FLOW</span></a>
+    <ul class="nav-links">
+        <li><a href="/" class="{% block nav_home %}{% endblock %}">Dashboard</a></li>
+        <li><a href="/recherche/" class="{% block nav_search %}{% endblock %}">Recherche</a></li>
+        <li><a href="/ajouter/" class="{% block nav_add %}{% endblock %}">Ajouter Taxi</a></li>
+    </ul>
+    <a href="/admin/" class="btn-admin"><i class="bi bi-gear"></i> Admin</a>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer>
+    <div style="margin-bottom:12px">
+        <a href="/">Dashboard</a>
+        <a href="/recherche/">Recherche</a>
+        <a href="/ajouter/">Ajouter</a>
+        <a href="/admin/">Admin</a>
+    </div>
+    © 2025 TaxiFlow — Système de Gestion de Flotte
+</footer>
+
+</body>
+</html>
